@@ -20,6 +20,8 @@
             <li><a href="{{ route('objetivos.index')     }}">Objetivos</a></li>
             <li><a href="{{ route('pnds.index')          }}">PND</a></li>
             <li><a href="{{ route('ods.index')           }}">ODS</a></li>
+             <li><a href="{{ route('programas.index')           }}">Programas</a></li>
+                <li><a href="{{ route('planes.index')           }}">Planes</a></li>
         @endrole
 
         {{-- ────────  AUDITOR  ──────── --}}
@@ -28,11 +30,16 @@
             <li><a href="{{ route('usuarios.index') }}">Usuarios</a></li>
         @endrole
 
-        {{-- ────────  USER (o cualquier otro rol)  ──────── --}}
+        {{-- ────────  USER  ──────── --}}
         @role('user')
             <li><a href="{{ route('instituciones.index') }}">Instituciones</a></li>
             <li><a href="{{ route('proyectos.index')     }}">Proyectos</a></li>
             <li><a href="{{ route('reportes.index')      }}">Reportes</a></li>
+        @endrole
+        {{-- ────────  planificador  ──────── --}}
+        @role('planificador')
+            <li><a href="{{ route('instituciones.index') }}">Instituciones</a></li>
+            <li><a href="{{ route('proyectos.index')     }}">Proyectos</a></li>
         @endrole
 
         {{-- Si más adelante necesitas que otro rol comparta enlaces, 

@@ -40,18 +40,22 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
-
-    /* -------------------------------------------------------------
-     |  Aliases (para usar en rutas)
-     | ------------------------------------------------------------ */
+    /* -------------------------------------------------------------|  Aliases (para usar en rutas)
+    | ------------------------------------------------------------ */
     protected $middlewareAliases = [
-    // Defaults de Laravel
-    'auth'          => \App\Http\Middleware\Authenticate::class,
-    'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
-    'verified'      => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+    // Laravel
+    'auth'     => \App\Http\Middleware\Authenticate::class,
+    'guest'    => \App\Http\Middleware\RedirectIfAuthenticated::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-    // Alias nuevos
-    'guest.role'    => \App\Http\Middleware\RedirectIfAuthenticatedByRole::class,
-    'role'          => \Spatie\Permission\Middleware\RoleMiddleware::class,
+    // Personalizado
+    'guest.role' => \App\Http\Middleware\RedirectIfAuthenticatedByRole::class,
+
+    // Spatie Permission  (SINGULAR “Middleware”)
+    'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+    'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+    'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
 ];
+
+
 }

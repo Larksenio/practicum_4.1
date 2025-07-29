@@ -10,26 +10,37 @@ class Institucion extends Model
 {
     use HasFactory;
 
-    protected $primaryKey='idInstitucion';
-    public $timestamps = false;
-    protected $table = 'instituciones';
+    protected $table      = 'instituciones';
+    protected $primaryKey = 'idInstitucion';
+    protected $keyType    = 'int';
+    public    $incrementing = true;
+    public    $timestamps   = false;          // <-- evita intentar created_at / updated_at
 
-    protected $fillable =[
+    protected $fillable = [
         'codigo',
         'nombre',
         'subsector',
         'nivel_gobierno',
+        'parent_id',
         'estado',
         'fecha_creacion',
-        'fecha_actualizacion'
+        'fecha_actualizacion',
     ];
 
-    /**
-     * Relación 1:N - Una institucion tiene muchos proyectos
-     */
+    /* ──────────── Relaciones ──────────── */
+    public function padre()
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'idInstitucion');
+    }
 
-     public function proyectos():HasMany
-     {
-        return $this->hasMany(Proyecto::class,'idInstitucion','idInstitucion');
-     }
+    public function hijos(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id', 'idInstitucion');
+    }
+
+    /* ──────────── Scopes ──────────── */
+    public function scopeActivas($q)
+    {
+        return $q->where('estado', 'activo');
+    }
 }

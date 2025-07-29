@@ -8,98 +8,78 @@ use Illuminate\Validation\Rule;
 
 class InstitucionController extends Controller
 {
-    /*---------------------------------------------------------------------
-    | 1. LISTADO (GET /instituciones)
-    ---------------------------------------------------------------------*/
+    public function __construct()
+    {
+        $this->middleware('permission:instituciones.view')->only(['index','show']);
+        $this->middleware('permission:instituciones.create')->only(['create','store']);
+        $this->middleware('permission:instituciones.edit')->only(['edit','update']);
+        $this->middleware('permission:instituciones.delete')->only(['destroy']);
+    }
+
+    /* ──────────── LISTADO ──────────── */
     public function index()
     {
-        $instituciones = Institucion::all();
+        $instituciones = Institucion::with('padre')->paginate(15);
         return view('instituciones.index', compact('instituciones'));
     }
 
-    /*---------------------------------------------------------------------
-    | 2. FORMULARIO CREAR (GET /instituciones/create)
-    ---------------------------------------------------------------------*/
+    /* ──────────── CREATE ──────────── */
     public function create()
     {
-        return view('instituciones.create');
+        $padres = Institucion::activas()->get();          // para el combo padre
+        return view('instituciones.create', compact('padres'));
     }
 
-    /*---------------------------------------------------------------------
-    | 3. GUARDAR NUEVA (POST /instituciones)
-    ---------------------------------------------------------------------*/
-    public function store(Request $request)
+    public function store(Request $r)
     {
-        $validated = $request->validate([
-            'codigo'            => ['required', 'integer', 'unique:instituciones,codigo'],
-            'nombre'            => ['required', 'string'],
-            'subsector'         => ['required', 'string'],
-            'nivel_gobierno'    => ['required', 'string'],
-            'estado'            => ['required', 'string'],
-            'fecha_creacion'    => ['required', 'date'],
-            'fecha_actualizacion'=> ['nullable', 'date'],
-        ]);
+        $data = $this->validateForm($r);                  // array validado
 
-        Institucion::create($validated);
+        $inst = Institucion::create($data);               // mass-assign seguro
 
         return redirect()
-            ->route('instituciones.index')
-            ->with('success', 'Institución creada satisfactoriamente');
+               ->route('instituciones.index')
+               ->with('ok', "Institución «{$inst->nombre}» creada");
     }
 
-    /*---------------------------------------------------------------------
-    | 4. MOSTRAR UNA (GET /instituciones/{institucion})
-    ---------------------------------------------------------------------*/
-    public function show(Institucion $institucion)
-    {
-        // Route-model binding inyecta el modelo listo
-        return view('instituciones.show', compact('institucion'));
-    }
-
-    /*---------------------------------------------------------------------
-    | 5. FORMULARIO EDITAR (GET /instituciones/{institucion}/edit)
-    ---------------------------------------------------------------------*/
+    /* ──────────── EDIT / UPDATE ──────────── */
     public function edit(Institucion $institucion)
     {
-        return view('instituciones.edit', compact('institucion'));
+        $padres = Institucion::activas()                  // excluye el propio registro
+                  ->where('idInstitucion','!=',$institucion->idInstitucion)
+                  ->get();
+
+        return view('instituciones.edit', compact('institucion','padres'));
     }
 
-    /*---------------------------------------------------------------------
-    | 6. ACTUALIZAR (PUT/PATCH /instituciones/{institucion})
-    ---------------------------------------------------------------------*/
-    public function update(Request $request, Institucion $institucion)
+    public function update(Request $r, Institucion $institucion)
     {
-        $validated = $request->validate([
-            'codigo'            => [
-                'required',
-                'integer',
-                // ignora la fila actual al verificar unicidad
-                Rule::unique('instituciones', 'codigo')->ignore($institucion->id ?? $institucion->idInstitucion),
-            ],
-            'nombre'            => ['required', 'string'],
-            'subsector'         => ['required', 'string'],
-            'nivel_gobierno'    => ['required', 'string'],
-            'estado'            => ['required', 'string'],
-            'fecha_creacion'    => ['required', 'date'],
-            'fecha_actualizacion'=> ['nullable', 'date'],
-        ]);
+        $data = $this->validateForm($r, $institucion->idInstitucion);
+        $institucion->update($data);
 
-        $institucion->update($validated);
-
-        return redirect()
-            ->route('instituciones.index')
-            ->with('success', 'Institución actualizada satisfactoriamente');
+        return back()->with('ok','Institución actualizada');
     }
 
-    /*---------------------------------------------------------------------
-    | 7. ELIMINAR (DELETE /instituciones/{institucion})
-    ---------------------------------------------------------------------*/
+    /* ──────────── DELETE ──────────── */
     public function destroy(Institucion $institucion)
     {
         $institucion->delete();
+        return back()->with('ok','Institución eliminada');
+    }
 
-        return redirect()
-            ->route('instituciones.index')
-            ->with('success', 'Institución eliminada satisfactoriamente');
+    /* ──────────── VALIDACIÓN ──────────── */
+    private function validateForm(Request $r, $id = null): array
+    {
+        return $r->validate([
+            'codigo'        => ['required','integer',
+                                Rule::unique('instituciones','codigo')
+                                    ->ignore($id,'idInstitucion')],
+            'nombre'        => ['required','string','max:120'],
+            'subsector'     => ['nullable','string','max:255'],
+            'nivel_gobierno'=> ['nullable','string','max:255'],
+            'parent_id'     => ['nullable',
+                                'exists:instituciones,idInstitucion',
+                                Rule::notIn([$id])],
+            'estado'        => ['required','in:activo,inactivo'],
+        ]);
     }
 }

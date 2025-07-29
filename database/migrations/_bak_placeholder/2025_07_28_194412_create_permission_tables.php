@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('pnd', function (Blueprint $table) {
-    $table->id();
-    $table->integer('codigo')->unique();
-    $table->string('eje');
-    $table->string('nombre');
-    $table->text('descripcion')->nullable();
-    $table->timestamps();
-});
+        Schema::create('permission_tables', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -26,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pnds');
+        Schema::dropIfExists('permission_tables');
     }
 };

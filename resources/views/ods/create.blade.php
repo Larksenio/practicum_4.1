@@ -43,7 +43,7 @@
               class="w-full border rounded px-2 py-1">{{ old('descripcion', $od->descripcion ?? '') }}</textarea>
   </div>
 
-  <button class="px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+  <button class="px-4 py-2 bg-blue-600 text-black rounded">Guardar</button>
   <a href="{{ route('ods.index') }}" class="ml-4 underline text-blue-600">Cancelar</a>
 </form>
 @endsection

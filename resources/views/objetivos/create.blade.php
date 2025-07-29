@@ -100,7 +100,7 @@
 
         {{-- Botones --}}
         <div class="pt-4">
-            <button class="px-4 py-2 bg-blue-600 text-white rounded">
+            <button class="px-4 py-2 bg-blue-600 text-black rounded">
                 Guardar
             </button>
             <a href="{{ route('objetivos.index') }}"

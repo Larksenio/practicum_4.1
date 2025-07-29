@@ -10,6 +10,8 @@ use App\Http\Controllers\{
     UsuarioController,
     ObjetivoController, PndController, OdsController
 };
+Route::resource('instituciones', InstitucionController::class)
+     ->whereNumber('institucion');
 
 /* ───── 1) LOGIN / LOGOUT ───── */
 Route::middleware('guest')->group(function () {
@@ -28,6 +30,17 @@ Route::middleware(['auth','role:admin'])->group(function () {
     Route::resource('pnds',       PndController::class);
     Route::resource('ods',        OdsController::class);
     Route::resource('objetivos',  ObjetivoController::class);
+    Route::resource('programas', App\Http\Controllers\ProgramaController::class);
+      Route::resource('planes', App\Http\Controllers\PlanController::class);
+
+       Route::get  ('proyectos/{proyecto}/alinear',  [App\Http\Controllers\AlineacionController::class,'edit'])
+         ->name('alinear.edit')
+         ->middleware('permission:alinear.view');
+
+    Route::put  ('proyectos/{proyecto}/alinear',  [App\Http\Controllers\AlineacionController::class,'update'])
+         ->name('alinear.update')
+         ->middleware('permission:alinear.update');
+
 });
 
 /* ───── 4) INSTITUCIONES ───── */

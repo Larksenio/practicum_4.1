@@ -82,12 +82,13 @@ class ObjetivoController extends Controller
         $uniqueCodigo = 'unique:objetivos,codigo' . ($ignoreId ? ',' . $ignoreId : '');
 
         return $request->validate([
-            'codigo'         => "required|integer|$uniqueCodigo",
-            'descripcion'    => 'required|string|max:255',
-            'version'        => 'required|integer|min:1',
-            'fecha_registro' => 'required|date',
-            'pnd_id'         => 'nullable|exists:pnds,id',
-            'ods_id'         => 'nullable|exists:ods,id',
+          'codigo'        => ["required","integer",$uniqueCodigo],
+        'descripcion'   => ['required','string','max:255'],
+        'estado'        => ['required','in:activo,inactivo'],
+        'version'       => ['required','integer','min:1'],
+        'fecha_registro'=> ['nullable','date'],
+        'pnd_id'        => ['nullable','exists:pnds,id'],
+        'ods_id'        => ['nullable','exists:ods,id'],
         ]);
     }
 }
