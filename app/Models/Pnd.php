@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pnd extends Model
 {
-    protected $fillable = ['codigo','descripcion','eje','nombre'];
+    use HasFactory;
 
-    // Relación inversa con Objetivo (uno-a-muchos)
-    public function objetivos()
+    protected $fillable = ['codigo','descripcion','nombre','eje_id'];
+
+    public function eje()
     {
-        return $this->hasMany(Objetivo::class);
+        return $this->belongsTo(PndEje::class, 'eje_id');
     }
 }

@@ -4,99 +4,120 @@ namespace App\Http\Controllers;
 
 use App\Models\Proyecto;
 use App\Models\Institucion;
+use App\Models\Objetivo;
 use Illuminate\Http\Request;
 
 class ProyectoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        // Si manejas permisos con Spatie, descomenta y ajusta:
+        // $this->middleware('permission:proyectos.view')->only(['index','show']);
+        // $this->middleware('permission:proyectos.create')->only(['create','store']);
+        // $this->middleware('permission:proyectos.edit')->only(['edit','update']);
+        // $this->middleware('permission:proyectos.delete')->only(['destroy']);
+    }
+
+    /* ──────────── LISTADO ──────────── */
     public function index()
     {
-        $proyectos = Proyecto::all();
-        return view('proyectos.index', compact('proyectos'));
+        $proyectos = Proyecto::with('institucion')
+            ->latest('idProyecto')
+            ->paginate(10);
 
+        return view('proyectos.index', compact('proyectos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    /* ──────────── CREATE ──────────── */
     public function create()
     {
-        $institucion = Institucion::all();
-        return view('proyectos.create', compact('institucion'));
+        $instituciones = Institucion::orderBy('nombre')->get();
+
+        // Objetivos para multi-select
+        $objetivos = Objetivo::orderBy('codigo')
+            ->get(['id', 'codigo', 'descripcion']); // si tu PK NO es id, dime cuál es
+
+        return view('proyectos.create', compact('instituciones', 'objetivos'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    /* ──────────── STORE ──────────── */
     public function store(Request $request)
     {
-        $request->validate([
-            'idInstitucion'=> 'required|exists:instituciones,idInstitucion',
-            'nombre'=> 'required|string',
-            'descripcion'=> 'nullable|string',
-            'estado'=> 'nullable|string',
-            'actividades'=> 'nullable|string',
-            'fecha_inicio'=> 'required|date',
-            'fecha_fin'=> 'nullable|date',
-            'tipologia'=> 'required|string',
+        $data = $this->validatedData($request);
 
-        ]);
+        // Creamos proyecto
+        $proyecto = Proyecto::create($data);
 
-        Proyecto::create($request->all());
+        // Asociar objetivos (si llegaron)
+        $objetivosIds = $request->input('objetivos_ids', []);
+        if (is_array($objetivosIds)) {
+            $proyecto->objetivos()->sync($objetivosIds);
+        }
 
-        return redirect()->route('proyectos.index')->with('success', 'Proyecto Creado Satisfactoriamente');
-
-
+        return redirect()
+            ->route('proyectos.index')
+            ->with('success', 'Proyecto creado satisfactoriamente');
     }
 
-   
-    /**
-     * Show the form for editing the specified resource.
-     */
+    /* ──────────── EDIT ──────────── */
     public function edit($id)
     {
-        $proyecto = Proyecto::findOrfail($id);
-        $instituciones = Institucion::all();
-        return view('proyectos.edit', compact('proyecto','instituciones')); 
+        $proyecto = Proyecto::with('objetivos')->findOrFail($id);
+
+        $instituciones = Institucion::orderBy('nombre')->get();
+
+        $objetivos = Objetivo::orderBy('codigo')
+            ->get(['id', 'codigo', 'descripcion']);
+
+        return view('proyectos.edit', compact('proyecto', 'instituciones', 'objetivos'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    /* ──────────── UPDATE ──────────── */
     public function update(Request $request, $id)
     {
-        
-        $request->validate([
-            'idInstitucion'=> 'required|exists:instituciones,idInstitucion',
-            'nombre'=> 'required|string',
-            'descripcion'=> 'nullable|string',
-            'estado'=> 'nullable|string',
-            'actividades'=> 'nullable|string',
-            'fecha_inicio'=> 'required|date',
-            'fecha_fin'=> 'nullable|date',
-            'tipologia'=> 'required|string',
+        $data = $this->validatedData($request);
 
-        ]);
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->update($data);
 
-        $proyecto = Proyecto::findOrfail($id);
-        $proyecto->update($request->all()); 
+        $objetivosIds = $request->input('objetivos_ids', []);
+        if (is_array($objetivosIds)) {
+            $proyecto->objetivos()->sync($objetivosIds);
+        }
 
-        return redirect()->route('proyectos.index')->with('success', 'Proyecto Actualizada Satisfactoriamente');
-
-
+        return redirect()
+            ->route('proyectos.index')
+            ->with('success', 'Proyecto actualizado satisfactoriamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    /* ──────────── DELETE ──────────── */
     public function destroy($id)
     {
-        $proyecto = Proyecto::findOrfail($id);
+        $proyecto = Proyecto::findOrFail($id);
         $proyecto->delete();
 
-         return redirect()->route('proyectos.index')->with('success', 'Proyecto Eliminada Satisfactoriamente');
+        return redirect()
+            ->route('proyectos.index')
+            ->with('success', 'Proyecto eliminado satisfactoriamente');
+    }
 
+    /* ──────────── VALIDACIÓN ──────────── */
+    private function validatedData(Request $request): array
+    {
+        return $request->validate([
+            'idInstitucion' => 'required|exists:instituciones,idInstitucion',
+            'codigo'        => 'required|integer',
+            'nombre'        => 'required|string|max:255',
+            'descripcion'   => 'nullable|string',
+            'estado'        => 'required|in:activo,inactivo',
+            'actividades'   => 'nullable|string',
+            'fecha_inicio'  => 'required|date',
+            'fecha_fin'     => 'nullable|date|after_or_equal:fecha_inicio',
+            'tipologia'     => 'required|string|max:255',
+
+            // objetivos_ids viene del form (multi-select)
+            'objetivos_ids'   => 'nullable|array',
+            'objetivos_ids.*' => 'integer|exists:objetivos,id',
+        ]);
     }
 }

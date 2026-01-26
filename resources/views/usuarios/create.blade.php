@@ -2,85 +2,90 @@
 
 @section('title', 'Nuevo usuario')
 
-@section('header')
-    <h2 class="text-2xl font-bold mb-4">Registrar usuario</h2>
-@endsection
-
 @section('content')
-    {{-- Errores de validación --------------------------------------------------- --}}
+<div class="max-w-4xl mx-auto py-8">
+
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+    <div class="mb-6">
+      <h1 class="text-xl font-semibold text-gray-900">Nuevo usuario</h1>
+      <p class="text-sm text-gray-500">Completa la información del usuario y guarda los cambios.</p>
+    </div>
+
+    {{-- Errores --}}
     @if ($errors->any())
-        <ul class="mb-4 list-disc pl-6 text-red-600">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
+      <div class="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <ul class="list-disc pl-5 space-y-1">
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
         </ul>
+      </div>
     @endif
 
-    {{-- Formulario -------------------------------------------------------------- --}}
-    <form action="{{ route('usuarios.store') }}" method="POST" class="max-w-md space-y-4">
-        @csrf
+    <form action="{{ route('usuarios.store') }}" method="POST" class="space-y-6">
+      @csrf
 
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Nombre --}}
         <div>
-            <label class="block font-semibold">Nombre</label>
-            <input type="text"
-                   name="name"
-                   required
-                   value="{{ old('name') }}"
-                   class="w-full border rounded px-2 py-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+          <input type="text"
+                 name="name"
+                 required
+                 value="{{ old('name') }}"
+                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
         {{-- Email --}}
         <div>
-            <label class="block font-semibold">E-mail</label>
-            <input type="email"
-                   name="email"
-                   required
-                   value="{{ old('email') }}"
-                   class="w-full border rounded px-2 py-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+          <input type="email"
+                 name="email"
+                 required
+                 value="{{ old('email') }}"
+                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
         {{-- Contraseña --}}
         <div>
-            <label class="block font-semibold">Contraseña</label>
-            <input type="password"
-                   name="password"
-                   required
-                   class="w-full border rounded px-2 py-1">
-            <input type="password"
-                   name="password_confirmation"
-                   required
-                   class="w-full border rounded px-2 py-1 mt-1"
-                   placeholder="Confirmar contraseña">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+          <input type="password"
+                 name="password"
+                 required
+                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        {{-- Confirmación --}}
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+          <input type="password"
+                 name="password_confirmation"
+                 required
+                 class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
         {{-- Rol --}}
-        <div>
-            <label class="block font-semibold">Rol</label>
-            <select name="role_id"
-                    required
-                    class="w-full border rounded px-2 py-1">
-                <option value="">— Seleccione —</option>
-                @foreach ($roles as $id => $nombre)
-                    <option value="{{ $id }}"
-                            {{ old('role_id') == $id ? 'selected' : '' }}>
-                        {{ ucfirst($nombre) }}
-                    </option>
-                @endforeach
-            </select>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
+          <select name="role_id"
+                  required
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">— Seleccione —</option>
+            @foreach ($roles as $id => $nombre)
+              <option value="{{ $id }}" {{ old('role_id') == $id ? 'selected' : '' }}>
+                {{ ucfirst($nombre) }}
+              </option>
+            @endforeach
+          </select>
         </div>
+      </div>
 
-        {{-- Botones --}}
-        <div class="pt-4">
-            <button type="submit"
-            class="ml-4 underline text-blue-600">
-                Guardar
-            </button>
-
-            <a href="{{ route('usuarios.index') }}"
-               class="ml-4 underline text-blue-600">
-               Cancelar
-            </a>
-        </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+        <a href="{{ route('usuarios.index') }}" class="btn-secondary">Cancelar</a>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
     </form>
+  </div>
+
+</div>
 @endsection

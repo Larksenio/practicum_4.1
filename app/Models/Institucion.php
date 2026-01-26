@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Institucion extends Model
 {
@@ -14,7 +15,7 @@ class Institucion extends Model
     protected $primaryKey = 'idInstitucion';
     protected $keyType    = 'int';
     public    $incrementing = true;
-    public    $timestamps   = false;          // <-- evita intentar created_at / updated_at
+    public    $timestamps   = false;
 
     protected $fillable = [
         'codigo',
@@ -27,8 +28,19 @@ class Institucion extends Model
         'fecha_actualizacion',
     ];
 
+    protected $casts = [
+        'fecha_creacion' => 'datetime',
+        'fecha_actualizacion' => 'datetime',
+    ];
+
+    /** Para que el route-model binding use la PK correcta */
+    public function getRouteKeyName(): string
+    {
+        return 'idInstitucion';
+    }
+
     /* ──────────── Relaciones ──────────── */
-    public function padre()
+    public function padre(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id', 'idInstitucion');
     }

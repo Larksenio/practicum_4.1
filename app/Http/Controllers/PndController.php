@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pnd;
 use Illuminate\Http\Request;
-
+use App\Models\PndEje;
 // app/Http/Controllers/PndController.php
 class PndController extends Controller
 {
@@ -15,22 +15,23 @@ class PndController extends Controller
 
     public function index()
     {
-        $pnds = Pnd::orderBy('codigo')->paginate(10);
-        return view('pnds.index', compact('pnds'));
+          $pnds = Pnd::with('eje')->orderBy('codigo')->paginate(10);
+    return view('pnds.index', compact('pnds'));
     }
 
     public function create()
     {
-        return view('pnds.create');
+         $ejes = PndEje::orderBy('nombre')->get();
+    return view('pnds.create', compact('ejes'));
     }
 
     public function store(Request $r)
     {
         $data = $r->validate([
-            'codigo'      => 'required|integer|unique:pnds',
-            'descripcion' => 'required|string|max:200',
-            'eje'         => 'required|string|max:50',
-            'nombre'      => 'required|string|max:120',
+            'codigo'      => 'required|integer|min:1|unique:pnds,codigo',
+    'descripcion' => 'required|string|max:200',
+    'eje_id'      => 'required|exists:pnd_ejes,id',
+    'nombre'      => 'required|string|max:120',
         ]);
 
         Pnd::create($data);
@@ -40,30 +41,28 @@ class PndController extends Controller
 
     public function edit(Pnd $pnd)
     {
-        return view('pnds.edit', compact('pnd'));
+       $ejes = PndEje::orderBy('nombre')->get();
+    return view('pnds.edit', compact('pnd','ejes'));
     }
 
     public function update(Request $r, Pnd $pnd)
     {
         $data = $r->validate([
-            'codigo'      => 'required|integer|unique:pnds,codigo,'.$pnd->id,
-            'descripcion' => 'required|string|max:200',
-            'eje'         => 'required|string|max:50',
-            'nombre'      => 'required|string|max:120',
+        'codigo'      => 'required|integer|min:1|unique:pnds,codigo,'.$pnd->id,
+    'descripcion' => 'required|string|max:200',
+    'eje_id'      => 'required|exists:pnd_ejes,id',
+    'nombre'      => 'required|string|max:120',
         ]);
 
-        $pnd->update($data);
-        return back()->with('success','PND actualizado.');
+         return redirect()->route('pnds.index')
+        ->with('success', 'PND actualizado.');
     }
 
-    public function destroy(Pnd $pnd)
-    {
-        // opcional: prevenir borrado si hay objetivos asociados
-        if ($pnd->objetivos()->exists()) {
-            return back()->with('error','No se puede eliminar: tiene objetivos.');
-        }
+   public function destroy(Pnd $pnd)
+{
+    $pnd->delete();
+    return back()->with('success','PND eliminado.');
+}
 
-        $pnd->delete();
-        return back()->with('success','PND eliminado.');
-    }
+
 }

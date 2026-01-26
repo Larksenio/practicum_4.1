@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Objetivo extends Model
 {
+    use HasFactory;
+
+    // Si tu tabla NO tiene created_at/updated_at, desactívalos
+    public $timestamps = false;
+
     protected $fillable = [
-       'codigo',
+        'codigo',
         'descripcion',
         'estado',
         'version',
@@ -17,11 +22,20 @@ class Objetivo extends Model
         'ods_id',
     ];
 
-    // Indica a Eloquent qué columnas usar
-    const CREATED_AT = 'fecha_registro';
-    const UPDATED_AT = 'updated_at';
-     public function scopeActivos($q)
+    /* Scopes */
+    public function scopeActivos($q)
     {
-        return $q->where('estado', 'activo');   // ajusta si tu campo se llama distinto
+        return $q->where('estado', 'ACTIVO'); // consistente con tus selects y validación
+    }
+
+    /* Relaciones */
+    public function pnd()
+    {
+        return $this->belongsTo(Pnd::class, 'pnd_id');
+    }
+
+    public function ods()
+    {
+        return $this->belongsTo(Ods::class, 'ods_id');
     }
 }

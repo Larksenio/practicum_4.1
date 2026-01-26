@@ -1,6 +1,5 @@
 <?php
 
-// app/Models/Programa.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +9,10 @@ class Programa extends Model
 {
     use HasFactory;
 
+    protected $table = 'programas';
     protected $primaryKey = 'idPrograma';
+    public $incrementing = true;
+    protected $keyType = 'int'; // aunque sea BIGINT en MySQL, Laravel trabaja bien así
 
     protected $fillable = [
         'institucion_id',
@@ -31,5 +33,8 @@ class Programa extends Model
     }
 
     /* Scope */
-    public function scopeActivos($q) { return $q->where('estado','activo'); }
+    public function scopeActivos($q)
+    {
+        return $q->where('estado', 'activo');
+    }
 }

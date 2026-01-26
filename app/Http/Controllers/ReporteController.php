@@ -6,6 +6,7 @@ use App\Models\Reporte;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReporteController extends Controller
 {
@@ -106,4 +107,16 @@ class ReporteController extends Controller
             ->route('reportes.index')
             ->with('success', 'Reporte eliminado.');
     }
+    public function download(Reporte $reporte)
+{
+    // (Opcional) cargar responsable por si no está cargado
+    $reporte->load('responsable');
+
+    $pdf = Pdf::loadView('reportes.pdf', compact('reporte'))
+        ->setPaper('a4', 'portrait');
+
+    $filename = 'reporte_' . $reporte->id . '_' . str()->slug($reporte->nombre) . '.pdf';
+
+    return $pdf->download($filename);
+}
 }

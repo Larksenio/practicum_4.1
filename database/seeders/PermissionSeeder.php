@@ -71,19 +71,40 @@ class PermissionSeeder extends Seeder
             'reportes.view','reportes.export','users.view',
         ]);
 
-        /* Planificador */
-        $sync('planificador', [
-            // lectura de catálogos
-            'instituciones.view','programas.view','proyectos.view',
-            'planes.view','objetivos.view',
+       /* Planificador */
+$sync('planificador', [
+    // INSTITUCIONES (CRUD)
+    'instituciones.view',
+    'instituciones.create',
+    'instituciones.edit',
+    'instituciones.delete',
 
-            // alta / edición
-            'programas.create','programas.edit',
-            'proyectos.create','proyectos.edit',
-            'planes.create','planes.edit',
-             'planes.view','planes.create','planes.edit',
-             'alinear.view','alinear.update'
-        ]);
+    // PROGRAMAS
+    'programas.view',
+    'programas.create',
+    'programas.edit',
+    'programas.delete',
+
+    // PROYECTOS
+    'proyectos.view',
+    'proyectos.create',
+    'proyectos.edit',
+    'proyectos.delete',
+
+    // PLANES
+    'planes.view',
+    'planes.create',
+    'planes.edit',
+    'planes.delete',
+
+    // OBJETIVOS
+    'objetivos.view',
+
+    // ALINEACIÓN
+    'alinear.view',
+    'alinear.update',
+]);
+
 
         /* Supervisor (solo lectura proyectos / reportes) */
         $sync('supervisor', [

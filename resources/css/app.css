@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Aquí van TODOS tus estilos personalizados */
+@layer components {
+    /* Cartas del menú (por si las usamos después) */
+    .card-menu {
+        @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5 
+               transition transform hover:shadow-md hover:-translate-y-0.5;
+    }
+
+    /* Botones genéricos */
+    .btn-primary {
+        @apply px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-semibold 
+               hover:bg-indigo-700 transition;
+    }
+
+    /* Tabla */
+    .table-header {
+        @apply bg-gray-50 text-xs font-semibold text-gray-600 uppercase tracking-wide;
+    }
+
+    .table-row {
+        @apply border-b hover:bg-gray-50;
+    }
+
+    /* MENÚ PRINCIPAL (Inicio) */
+     .menu-wrapper {
+        @apply w-full max-w-6xl mx-auto
+               flex flex-nowrap items-center justify-center gap-2
+               bg-white border border-gray-200 rounded-xl shadow-sm
+               px-6 py-4 overflow-x-auto;
+    }
+
+   .menu-item {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    font-size: 0.875rem;
+    color: #1f2937;
+    transition: all 0.2s ease-in-out;
+}
+
+.menu-item:hover {
+    background-color: #e5e7eb;
+}
+
+
+}

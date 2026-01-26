@@ -1,44 +1,49 @@
-@csrf
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-  {{-- Institución --}}
-  <label class="block col-span-2 md:col-span-1">
-    <span class="text-sm font-medium">Institución</span>
-    <select name="institucion_id" class="border rounded px-2 py-1 w-full" required>
-      <option value="">— Seleccione —</option>
-      @foreach ($instituciones as $id=>$nombre)
-        <option value="{{ $id }}"
-          {{ old('institucion_id', $prog->institucion_id ?? '') == $id ? 'selected' : '' }}>
-          {{ $nombre }}
-        </option>
-      @endforeach
-    </select>
-  </label>
+    {{-- Institución --}}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+        <select name="institucion_id" required
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="">— Seleccione —</option>
+            @foreach($instituciones as $id => $nombre)
+                <option value="{{ $id }}"
+                    {{ (string) old('institucion_id', $prog->institucion_id ?? '') === (string) $id ? 'selected' : '' }}>
+                    {{ $nombre }}
+                </option>
+            @endforeach
+        </select>
+    </div>
 
-  {{-- Nombre --}}
-  <label class="block col-span-2 md:col-span-1">
-    <span class="text-sm font-medium">Nombre</span>
-    <input type="text" name="nombre"
-           value="{{ old('nombre', $prog->nombre ?? '') }}"
-           class="border rounded px-2 py-1 w-full" required>
-  </label>
+    {{-- Nombre --}}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+        <input type="text" name="nombre" required
+               value="{{ old('nombre', $prog->nombre ?? '') }}"
+               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+    </div>
 
-  {{-- Descripción --}}
-  <label class="block col-span-2">
-    <span class="text-sm font-medium">Descripción</span>
-    <textarea name="descripcion" rows="3"
-              class="border rounded px-2 py-1 w-full">{{ old('descripcion', $prog->descripcion ?? '') }}</textarea>
-  </label>
+    {{-- Descripción --}}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+        <textarea name="descripcion" rows="3"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Opcional">{{ old('descripcion', $prog->descripcion ?? '') }}</textarea>
+    </div>
 
-  {{-- Estado --}}
-  <label class="block col-span-2 md:col-span-1">
-    <span class="text-sm font-medium">Estado</span>
-    <select name="estado" class="border rounded px-2 py-1 w-full" required>
-      <option value="activo"   {{ old('estado', $prog->estado ?? 'activo')=='activo' ? 'selected' : '' }}>Activo</option>
-      <option value="inactivo" {{ old('estado', $prog->estado ?? '')=='inactivo' ? 'selected' : '' }}>Inactivo</option>
-    </select>
-  </label>
+    {{-- Estado --}}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+        @php $estado = strtolower(old('estado', $prog->estado ?? 'activo')); @endphp
+        <select name="estado" required
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="activo" {{ $estado === 'activo' ? 'selected' : '' }}>Activo</option>
+            <option value="inactivo" {{ $estado === 'inactivo' ? 'selected' : '' }}>Inactivo</option>
+        </select>
+    </div>
+
 </div>
-
-<button class="mt-4 bg-green-600 text-black px-4 py-1 rounded">Guardar</button>
-<a href="{{ route('programas.index') }}" class="ml-3">Volver</a>
