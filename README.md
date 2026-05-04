@@ -78,7 +78,7 @@ Permite gestionar usuarios del sistema y controlar el acceso mediante roles y pe
 
 ### Panel principal
 
-![Panel principal](screenshots/panel-principal.png)
+![Panel principal](screenshots/proyecto4.png)
 
 ### Gestión de proyectos
 
